@@ -1,9 +1,11 @@
+import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
 import java.util.Iterator;
 
 import javax.imageio.IIOImage;
 import javax.imageio.ImageIO;
+import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.stream.ImageInputStream;
 
@@ -19,29 +21,23 @@ public class ImageTest {
 	 * @throws IOException 
 	 */
 	public static void main(String[] args) throws IOException {
-		File imageFile = new File("check2.jpg");
-		ImageReader localImageReader = null;
-	    ImageInputStream localImageInputStream = null;
-        Tesseract instance = Tesseract.getInstance();  // JNA Interface Mapping
-        // Tesseract1 instance = new Tesseract1(); // JNA Direct Mapping
-
-        try {//localImageReader.setInput(localImageInputStream);
-        	String str1 = imageFile.getName();
-        	String str2 = str1.substring(str1.lastIndexOf('.') + 1);
-        	Iterator localIterator = ImageIO.getImageReadersByFormatName(str2);
-        	localImageReader = (ImageReader)localIterator.next();
-            localImageInputStream = ImageIO.createImageInputStream(imageFile);
-            localImageReader.setInput(localImageInputStream);
-            System.out.println(localImageReader);
-            int i = localImageReader.getNumImages(true);
-            System.out.println(i);
-            for (int j = 0; j < i; j++)
-            {
-            	System.out.println(localImageReader.getDefaultReadParam());
-              IIOImage localIIOImage = localImageReader.readAll(j, localImageReader.getDefaultReadParam());
-              System.out.println(localIIOImage);
-            }
-        	String result = instance.doOCR(imageFile);
+		File imageFile = new File("eve1.jpg");
+		Tesseract instance = Tesseract.getInstance();  // JNA Interface Mapping
+                try {//localImageReader.setInput(localImageInputStream);
+                	ImageInputStream is = ImageIO.createImageInputStream(new File("check2332_gs.jpg"));
+                	
+                    Iterator<ImageReader> readers = ImageIO.getImageReaders(is);
+                    System.out.println(readers);
+                    BufferedImage img = null;
+                    while (readers.hasNext())
+                    {
+                        ImageReader reader = readers.next();
+                       // System.out.println(reader);
+                        reader.setInput(is);
+                        img = reader.read(0);
+                        System.out.println(img);
+                    }
+        	String result = instance.doOCR(img);
         	
             System.out.println(result);
         } catch (TesseractException e) {
